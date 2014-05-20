@@ -22,8 +22,9 @@ set(SLIM_VERSION_PATCH "4")
 set(SLIM_VERSION "${SLIM_VERSION_MAJOR}.${SLIM_VERSION_MINOR}.${SLIM_VERSION_PATCH}")
 
 set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory")
+set(CMAKE_INSTALL_PREFIX "./installroot")
 set(PKGDATADIR "${CMAKE_INSTALL_PREFIX}/share/slim")
-set(SYSCONFDIR "/etc")
+set(SYSCONFDIR "${CMAKE_INSTALL_PREFIX}/etc")
 set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
 
 set(SLIM_DEFINITIONS)
@@ -166,7 +167,7 @@ target_link_libraries(${PROJECT_NAME}
 
 ####### install
 # slim
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin )
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 # man file
 install(FILES slim.1 DESTINATION ${MANDIR}/man1/)
 # configure
