@@ -4,6 +4,10 @@
 rm -rf build/
 mkdir build
 cd build
+if [ "$1" = "debug" ];then
+cmake .. -DUSE_PAM=yes -DAPP_DEBUG=yes -DCMAKE_BUILD_TYPE=Debug
+else
 cmake ..
-make 
+fi
+make
 make install

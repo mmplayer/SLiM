@@ -88,6 +88,10 @@ if(FONTCONFIG_FOUND)
 	include_directories(${FONTCONFIG_INCLUDE_DIR})
 endif(FONTCONFIG_FOUND)
 
+if(APP_DEBUG)
+	set(SLIM_DEFINITIONS ${SLIM_DEFINITIONS} "-DXNEST_DEBUG")
+endif(APP_DEBUG)
+
 # PAM
 if(USE_PAM)
 	message("\tPAM Enabled")
