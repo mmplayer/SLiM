@@ -22,7 +22,7 @@ set(SLIM_VERSION_PATCH "4")
 set(SLIM_VERSION "${SLIM_VERSION_MAJOR}.${SLIM_VERSION_MINOR}.${SLIM_VERSION_PATCH}")
 
 set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory")
-set(CMAKE_INSTALL_PREFIX "./installroot")
+set(CMAKE_INSTALL_PREFIX "/usr/local/slim")
 set(PKGDATADIR "${CMAKE_INSTALL_PREFIX}/share/slim")
 set(SYSCONFDIR "${CMAKE_INSTALL_PREFIX}/etc")
 set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
@@ -45,6 +45,7 @@ set(SLIM_DEFINITIONS ${SLIM_DEFINITIONS} "-DSYSCONFDIR=\"${SYSCONFDIR}\"")
 # Flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -O2" )
 set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -Wall -g -O2" )
+#set(CMAKE_EXE_LINKER_FLAGS "-ggdb -g3")
 
 # source 
 set(slim_srcs
@@ -171,7 +172,7 @@ target_link_libraries(${PROJECT_NAME}
 
 ####### install
 # slim
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin )
 # man file
 install(FILES slim.1 DESTINATION ${MANDIR}/man1/)
 # configure

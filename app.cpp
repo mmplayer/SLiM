@@ -307,7 +307,7 @@ void App::Run() {
     // for tests we use a standard window
     if (testing) {
         Window RealRoot = RootWindow(Dpy, Scr);
-        Root = XCreateSimpleWindow(Dpy, RealRoot, 0, 0, 1280, 1024, 0, 0, 0);
+        Root = XCreateSimpleWindow(Dpy, RealRoot, 0, 0, 1280, 800, 0, 0, 0);
         XMapWindow(Dpy, Root);
         XFlush(Dpy);
     } else {
