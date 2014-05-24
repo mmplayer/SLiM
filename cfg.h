@@ -15,8 +15,8 @@
 #include <map>
 #include <vector>
 
-#define INPUT_MAXLENGTH_NAME    24
-#define INPUT_MAXLENGTH_PASSWD  24
+#define INPUT_MAXLENGTH_NAME    25
+#define INPUT_MAXLENGTH_PASSWD  25
 
 #define CFGFILE SYSCONFDIR"/slim.conf"
 #define THEMESDIR PKGDATADIR"/themes"

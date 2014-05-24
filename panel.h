@@ -48,11 +48,12 @@ public:
 
 
     Panel(Display* dpy, int scr, Window root, Cfg* config,
-          const std::string& themed);
+          const std::string& themed, bool showcover);
     ~Panel();
-    void OpenPanel();
+    void OpenPanel(bool showcover);
     void ClosePanel();
     void ClearPanel();
+	bool IsCoverShown();
     void Message(const std::string& text);
     void Error(const std::string& text);
     void EventHandler(const FieldType& curfield);
@@ -141,8 +142,10 @@ private:
 
     // Pixmap data
     Pixmap PanelPixmap;
+    Pixmap CoverPixmap;
 
     Image* image;
+    Image* coverImage;
 
     // For thesting themes
     bool testing;
@@ -151,6 +154,9 @@ private:
     // Session handling
     std::string session;
 
+    // show cover before login
+    bool Showcover;
+    bool CoverShown;
 };
 
 #endif

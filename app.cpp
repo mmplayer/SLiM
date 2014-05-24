@@ -141,12 +141,16 @@ App::App(int argc, char** argv)
     daemonmode = false;
     force_nodaemon = false;
     firstlogin = true;
+	showcover = false; // show a cover image before login
     Dpy = NULL;
 
     // Parse command line
     // Note: we force a option for nodaemon switch to handle "-nodaemon"
-    while((tmp = getopt(argc, argv, "vhp:n:d?")) != EOF) {
+    while((tmp = getopt(argc, argv, "cvhp:n:d?")) != EOF) {
         switch (tmp) {
+		case 'c':
+			showcover=true;
+			break;
         case 'p':    // Test theme
             testtheme = optarg;
             testing = true;
@@ -317,7 +321,7 @@ void App::Run() {
     HideCursor();
 
     // Create panel
-    LoginPanel = new Panel(Dpy, Scr, Root, cfg, themedir);
+    LoginPanel = new Panel(Dpy, Scr, Root, cfg, themedir, showcover);
     bool firstloop = true; // 1st time panel is shown (for automatic username)
     bool focuspass = cfg->getOption("focus_password")=="yes";
     bool autologin = cfg->getOption("auto_login")=="yes";
@@ -357,7 +361,12 @@ void App::Run() {
             }
 
             // Show panel
-            LoginPanel->OpenPanel();
+			if (firstloop && showcover && !LoginPanel->IsCoverShown()) {
+                LoginPanel->OpenPanel(true);
+                LoginPanel->EventHandler(Panel::Get_Name); // quit event loop when enter is pressed
+				LoginPanel->ClosePanel();
+			}
+            LoginPanel->OpenPanel(false);
         }
 
         LoginPanel->Reset();

@@ -16,12 +16,13 @@
 using namespace std;
 
 Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
-             const string& themedir) {
+             const string& themedir, bool showcover) {
     // Set display
     Dpy = dpy;
     Scr = scr;
     Root = root;
     cfg = config;
+	Showcover = showcover;
 
     session = "";
 
@@ -87,6 +88,24 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
         }
     }
 
+    // Load cover image
+	if (Showcover) {
+        panelpng = themedir +"/cover.png";
+        coverImage = new Image;
+        loaded = coverImage->Read(panelpng.c_str());
+        if (!loaded) { // try jpeg if png failed
+            panelpng = themedir + "/cover.jpg";
+            loaded = coverImage->Read(panelpng.c_str());
+            if (!loaded) {
+                logStream << APPNAME
+                     << ": could not load cover image for theme '"
+                     << basename((char*)themedir.c_str()) << "'"
+                     << endl;
+                exit(ERR_EXIT);
+            }
+        }
+    }
+
     Image* bg = new Image();
     string bgstyle = cfg->getOption("background_style");
     if (bgstyle != "color") {
@@ -129,8 +148,14 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
 
     // Merge image into background
     image->Merge(bg, X, Y);
+    if (Showcover) {
+        coverImage->Merge(bg, X, Y);
+    }
     delete bg;
     PanelPixmap = image->createPixmap(Dpy, Scr, Root);
+    if (Showcover) {
+        CoverPixmap = coverImage->createPixmap(Dpy, Scr, Root);
+    }
 
     // Read (and substitute vars in) the welcome message
     welcome_message = cfg->getWelcomeMessage();
@@ -154,7 +179,7 @@ Panel::~Panel() {
 
 }
 
-void Panel::OpenPanel() {
+void Panel::OpenPanel(bool showcover) {
     // Create window
     Win = XCreateSimpleWindow(Dpy, Root, X, Y,
                               image->Width(),
@@ -165,7 +190,11 @@ void Panel::OpenPanel() {
     XSelectInput(Dpy, Win, ExposureMask | KeyPressMask);
 
     // Set background
+	if (showcover){
+    XSetWindowBackgroundPixmap(Dpy, Win, CoverPixmap);
+	} else {
     XSetWindowBackgroundPixmap(Dpy, Win, PanelPixmap);
+	}
 
     // Show window
     XMapWindow(Dpy, Win);
@@ -176,6 +205,13 @@ void Panel::OpenPanel() {
 
     XFlush(Dpy);
 
+	if (showcover){
+		CoverShown=true;
+	}
+}
+
+bool Panel::IsCoverShown(){
+	return CoverShown;
 }
 
 void Panel::ClosePanel() {
@@ -183,6 +219,9 @@ void Panel::ClosePanel() {
     XUnmapWindow(Dpy, Win);
     XDestroyWindow(Dpy, Win);
     XFlush(Dpy);
+	if(CoverShown){
+		CoverShown=false;
+	}
 }
 
 void Panel::ClearPanel() {
@@ -221,7 +260,7 @@ void Panel::Error(const string& text) {
     ClosePanel();
     Message(text);
     sleep(ERROR_DURATION);
-    OpenPanel();
+    OpenPanel(CoverShown);
     ClearPanel();
 }
 
@@ -279,6 +318,7 @@ void Panel::Cursor(int visible) {
     }
 }
 
+
 void Panel::EventHandler(const Panel::FieldType& curfield) {
     XEvent event;
     field=curfield;
@@ -309,6 +349,7 @@ void Panel::EventHandler(const Panel::FieldType& curfield) {
 }
 
 void Panel::OnExpose(void) {
+	if (CoverShown){return;} // do nothing if show cover
     XftDraw *draw = XftDrawCreate(Dpy, Win,
                         DefaultVisual(Dpy, Scr), DefaultColormap(Dpy, Scr));
     XClearWindow(Dpy, Win);
@@ -367,6 +408,7 @@ bool Panel::OnKeyPress(XEvent& event) {
 
         case XK_Return:
         case XK_KP_Enter:
+			if (CoverShown){return false;} // do nothing if show cover
             if (field==Get_Name){
                 // Don't allow an empty username
                 if (NameBuffer.empty()) return true;
@@ -391,6 +433,7 @@ bool Panel::OnKeyPress(XEvent& event) {
     };
 
     Cursor(HIDE);
+	if (CoverShown){return true;} // continue looping
     switch(keysym){
         case XK_Delete:
         case XK_BackSpace:

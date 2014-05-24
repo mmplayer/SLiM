@@ -108,6 +108,7 @@ private:
 	char* testtheme;
     bool testing;
     
+	bool showcover;
     std::string themeName;
     std::string mcookie;
 
