@@ -34,6 +34,34 @@
 
 using namespace std;
 
+string to_string(int number){
+    string number_string = "";
+    char ones_char;
+    int ones = 0;
+    while(true){
+        ones = number % 10;
+        switch(ones){
+            case 0: ones_char = '0'; break;
+            case 1: ones_char = '1'; break;
+            case 2: ones_char = '2'; break;
+            case 3: ones_char = '3'; break;
+            case 4: ones_char = '4'; break;
+            case 5: ones_char = '5'; break;
+            case 6: ones_char = '6'; break;
+            case 7: ones_char = '7'; break;
+            case 8: ones_char = '8'; break;
+            case 9: ones_char = '9'; break;
+            default : ones_char = '-' ;
+        }
+        number -= ones;
+        number_string = ones_char + number_string;
+        if(number == 0){
+            break;
+        }
+        number = number/10;
+    }
+    return number_string;
+}
 #ifdef USE_PAM
 #include <string>
 
@@ -638,10 +666,15 @@ void App::Login() {
         // Login process starts here
         SwitchUser Su(pw, cfg, DisplayName, child_env);
         string session = LoginPanel->getSession();
+		if(session.empty()){
+			session="default";
+		}
         string loginCommand = cfg->getOption("login_cmd");
         replaceVariables(loginCommand, SESSION_VAR, session);
-        replaceVariables(loginCommand, SCREEN_WIDTH, DisplayWidth (Dpy, Scr));
-        replaceVariables(loginCommand, SCREEN_HEIGHT,DisplayHeight (Dpy, Scr));
+		string swidth = to_string(DisplayWidth (Dpy, Scr));
+		string sheight = to_string(DisplayHeight (Dpy, Scr));
+        replaceVariables(loginCommand, SCREEN_WIDTH, swidth.c_str());
+        replaceVariables(loginCommand, SCREEN_HEIGHT,sheight.c_str());
         replaceVariables(loginCommand, THEME_VAR, themeName);
         string sessStart = cfg->getOption("sessionstart_cmd");
         if (sessStart != "") {
