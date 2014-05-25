@@ -49,6 +49,7 @@ Cfg::Cfg()
     options.insert(option("auto_login","no"));
     options.insert(option("current_theme","default"));
     options.insert(option("lockfile","/var/run/slim.lock"));
+    options.insert(option("coverlockfile","/var/lock/slim_disable_cover.lock"));
     options.insert(option("logfile","/var/log/slim.log"));
     options.insert(option("authfile","/var/run/slim.auth"));
     options.insert(option("shutdown_msg","The system is halting..."));
