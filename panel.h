@@ -89,6 +89,7 @@ private:
     Display* Dpy;
     int Scr;
     int X, Y;
+    int CoverX, CoverY;
     GC TextGC;
     XftFont* font;
     XftColor inputshadowcolor;
@@ -145,7 +146,7 @@ private:
     Pixmap CoverPixmap;
 
     Image* image;
-    Image* coverImage;
+    Image* CoverImage;
 
     // For thesting themes
     bool testing;

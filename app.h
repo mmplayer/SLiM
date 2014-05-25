@@ -42,6 +42,7 @@ public:
 
     // Lock functions
     void GetLock();
+    bool ExistsLock();
     void RemoveLock();
 
     bool isServerStarted();

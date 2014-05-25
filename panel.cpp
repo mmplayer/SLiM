@@ -91,11 +91,11 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
     // Load cover image
 	if (Showcover) {
         panelpng = themedir +"/cover.png";
-        coverImage = new Image;
-        loaded = coverImage->Read(panelpng.c_str());
+        CoverImage = new Image;
+        loaded = CoverImage->Read(panelpng.c_str());
         if (!loaded) { // try jpeg if png failed
             panelpng = themedir + "/cover.jpg";
-            loaded = coverImage->Read(panelpng.c_str());
+            loaded = CoverImage->Read(panelpng.c_str());
             if (!loaded) {
                 logStream << APPNAME
                      << ": could not load cover image for theme '"
@@ -107,13 +107,16 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
     }
 
     Image* bg = new Image();
+	Image* bg2 = new Image();
     string bgstyle = cfg->getOption("background_style");
     if (bgstyle != "color") {
         panelpng = themedir +"/background.png";
         loaded = bg->Read(panelpng.c_str());
+        loaded = bg2->Read(panelpng.c_str());
         if (!loaded) { // try jpeg if png failed
             panelpng = themedir + "/background.jpg";
             loaded = bg->Read(panelpng.c_str());
+            loaded = bg2->Read(panelpng.c_str());
             if (!loaded){
                 logStream << APPNAME
                      << ": could not load background image for theme '"
@@ -125,12 +128,17 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
     }
     if (bgstyle == "stretch") {
         bg->Resize(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)));
+        bg2->Resize(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)));
     } else if (bgstyle == "tile") {
         bg->Tile(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)));
+        bg2->Tile(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)));
     } else if (bgstyle == "center") {
         string hexvalue = cfg->getOption("background_color");
         hexvalue = hexvalue.substr(1,6);
         bg->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)),
+                   XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
+                   hexvalue.c_str());
+        bg2->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)),
                    XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
                    hexvalue.c_str());
     } else { // plain color or error
@@ -139,22 +147,29 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
         bg->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)),
                    XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
                    hexvalue.c_str());
+        bg2->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)),
+                   XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
+                   hexvalue.c_str());
     }
 
     string cfgX = cfg->getOption("input_panel_x");
     string cfgY = cfg->getOption("input_panel_y");
     X = Cfg::absolutepos(cfgX, XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), image->Width());
     Y = Cfg::absolutepos(cfgY, XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)), image->Height());
+    if (Showcover) {
+    CoverX = Cfg::absolutepos(cfgX, XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), CoverImage->Width());
+    CoverY = Cfg::absolutepos(cfgY, XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)), CoverImage->Height());
+	}
 
     // Merge image into background
     image->Merge(bg, X, Y);
     if (Showcover) {
-        coverImage->Merge(bg, X, Y);
+        CoverImage->Merge(bg2, CoverX, CoverY);
     }
     delete bg;
     PanelPixmap = image->createPixmap(Dpy, Scr, Root);
     if (Showcover) {
-        CoverPixmap = coverImage->createPixmap(Dpy, Scr, Root);
+         CoverPixmap = CoverImage->createPixmap(Dpy, Scr, Root);
     }
 
     // Read (and substitute vars in) the welcome message
@@ -181,9 +196,21 @@ Panel::~Panel() {
 
 void Panel::OpenPanel(bool showcover) {
     // Create window
-    Win = XCreateSimpleWindow(Dpy, Root, X, Y,
-                              image->Width(),
-                              image->Height(),
+	int x,y,width,height;
+	if (showcover){
+		x=CoverX;
+		y=CoverY;
+		width=CoverImage->Width();
+		height=CoverImage->Height();
+	}else{
+		x=X;
+		y=Y;
+		width=image->Width();
+		height=image->Height();
+	}
+    Win = XCreateSimpleWindow(Dpy, Root, x, y,
+                              width,
+                              height,
                               0, GetColor("white"), GetColor("white"));
 
     // Events

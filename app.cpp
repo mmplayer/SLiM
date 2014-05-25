@@ -311,7 +311,7 @@ void App::Run() {
     // for tests we use a standard window
     if (testing) {
         Window RealRoot = RootWindow(Dpy, Scr);
-        Root = XCreateSimpleWindow(Dpy, RealRoot, 0, 0, 1280, 800, 0, 0, 0);
+        Root = XCreateSimpleWindow(Dpy, RealRoot, 0, 0, 800, 600, 0, 0, 0);
         XMapWindow(Dpy, Root);
         XFlush(Dpy);
     } else {
@@ -361,7 +361,7 @@ void App::Run() {
             }
 
             // Show panel
-			if (firstloop && showcover && !LoginPanel->IsCoverShown()) {
+			if (firstloop && showcover && !LoginPanel->IsCoverShown() && !ExistsLock()) {
                 LoginPanel->OpenPanel(true);
                 LoginPanel->EventHandler(Panel::Get_Name); // quit event loop when enter is pressed
 				LoginPanel->ClosePanel();
@@ -1105,6 +1105,14 @@ void App::setBackground(const string& themedir) {
     
     XFlush(Dpy);
     delete image;
+}
+
+bool App::ExistsLock(){
+	if( access( cfg->getOption("coverlockfile").c_str(), F_OK ) != -1 ) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // Check if there is a lockfile and a corresponding process
