@@ -640,6 +640,8 @@ void App::Login() {
         string session = LoginPanel->getSession();
         string loginCommand = cfg->getOption("login_cmd");
         replaceVariables(loginCommand, SESSION_VAR, session);
+        replaceVariables(loginCommand, SCREEN_WIDTH, DisplayWidth (Dpy, Scr));
+        replaceVariables(loginCommand, SCREEN_HEIGHT,DisplayHeight (Dpy, Scr));
         replaceVariables(loginCommand, THEME_VAR, themeName);
         string sessStart = cfg->getOption("sessionstart_cmd");
         if (sessStart != "") {

@@ -39,6 +39,8 @@
 
 // variables replaced in login_cmd
 #define SESSION_VAR     "%session"
+#define SCREEN_WIDTH    "%screen_width"
+#define SCREEN_HEIGHT    "%screen_height"
 #define THEME_VAR       "%theme"
 
 /* variables replaced in pre-session_cmd and post-session_cmd */
