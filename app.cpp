@@ -663,16 +663,25 @@ void App::Login() {
 
 #endif
 
+        string session = LoginPanel->getSession();
+
+		// Call Login success command as root
+		string swidth = to_string(DisplayWidth (Dpy, Scr));
+		string sheight = to_string(DisplayHeight (Dpy, Scr));
+        string loginSucessCommand = cfg->getOption("login_sucess_cmd");
+        replaceVariables(loginSucessCommand, SESSION_VAR, session);
+        replaceVariables(loginSucessCommand, SCREEN_WIDTH, swidth.c_str());
+        replaceVariables(loginSucessCommand, SCREEN_HEIGHT,sheight.c_str());
+        replaceVariables(loginSucessCommand, THEME_VAR, themeName);
+        system(loginSucessCommand.c_str());
+
         // Login process starts here
         SwitchUser Su(pw, cfg, DisplayName, child_env);
-        string session = LoginPanel->getSession();
 		if(session.empty()){
 			session="default";
 		}
         string loginCommand = cfg->getOption("login_cmd");
         replaceVariables(loginCommand, SESSION_VAR, session);
-		string swidth = to_string(DisplayWidth (Dpy, Scr));
-		string sheight = to_string(DisplayHeight (Dpy, Scr));
         replaceVariables(loginCommand, SCREEN_WIDTH, swidth.c_str());
         replaceVariables(loginCommand, SCREEN_HEIGHT,sheight.c_str());
         replaceVariables(loginCommand, THEME_VAR, themeName);
