@@ -391,6 +391,14 @@ void App::Run() {
             // Show panel
 			if (firstloop && showcover && !LoginPanel->IsCoverShown() && !ExistsLock()) {
                 LoginPanel->OpenPanel(true);
+    string preLoginCommand = cfg->getOption("prelogin_cmd");
+    if (preLoginCommand != "") {
+    	cout << "prelogin_cmd " << preLoginCommand.c_str() << endl;
+    	int status=system(preLoginCommand.c_str());
+    	cout << "executed " << status << endl;
+    	    HideCursor();
+    	cout << "hide cursor " << endl;
+    }
                 LoginPanel->EventHandler(Panel::Get_Name); // quit event loop when enter is pressed
 				LoginPanel->ClosePanel();
 			}
@@ -669,12 +677,13 @@ void App::Login() {
 		string swidth = to_string(DisplayWidth (Dpy, Scr));
 		string sheight = to_string(DisplayHeight (Dpy, Scr));
         string loginSuccessCommand = cfg->getOption("login_success_cmd");
-        replaceVariables(loginSuccessCommand, SESSION_VAR, session);
-        replaceVariables(loginSuccessCommand, SCREEN_WIDTH, swidth.c_str());
-        replaceVariables(loginSuccessCommand, SCREEN_HEIGHT,sheight.c_str());
-        replaceVariables(loginSuccessCommand, THEME_VAR, themeName);
-        system(loginSuccessCommand.c_str());
-
+        if (loginSuccessCommand != "") {
+            replaceVariables(loginSuccessCommand, SESSION_VAR, session);
+            replaceVariables(loginSuccessCommand, SCREEN_WIDTH, swidth.c_str());
+            replaceVariables(loginSuccessCommand, SCREEN_HEIGHT,sheight.c_str());
+            replaceVariables(loginSuccessCommand, THEME_VAR, themeName);
+            system(loginSuccessCommand.c_str());
+        }
         // Login process starts here
         SwitchUser Su(pw, cfg, DisplayName, child_env);
 		if(session.empty()){
