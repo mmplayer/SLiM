@@ -8,6 +8,7 @@ if [ "$1" = "debug" ];then
 cmake .. -DAPP_DEBUG=yes -DCMAKE_BUILD_TYPE=Debug
 else
 cmake .. -DUSE_CONSOLEKIT=yes
+#cmake .. -DUSE_CONSOLEKIT=yes -DCMAKE_BUILD_TYPE=Debug
 fi
 make
 make install
