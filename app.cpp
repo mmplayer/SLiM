@@ -388,19 +388,18 @@ void App::Run() {
                 KillAllClients(True);
             }
 
-			if (firstloop && showcover){
-                string preLoginCommand = cfg->getOption("prelogin_cmd");
-                if (preLoginCommand != "") {
-                    cout << "prelogin_cmd " << preLoginCommand.c_str() << endl;
-                    HideCursor();
-                    int status=system(preLoginCommand.c_str());
-                    cout << "executed " << status << endl;
-                    cout << "hide cursor " << endl;
-                }
-			}
-
+	    if (firstloop && showcover) {
+            string preLoginCommand = cfg->getOption("prelogin_cmd");
+            if (preLoginCommand != "") {
+                cout << "hide cursor " << endl;
+                HideCursor();
+                cout << "execute prelogin_cmd " << preLoginCommand.c_str() << endl;
+                int status=system(preLoginCommand.c_str());
+                cout << "executed " << status << endl;
+            }
+		}
             // Show panel
-			if (firstloop && showcover && !LoginPanel->IsCoverShown() && !ExistsLock()) {
+	    if (firstloop && showcover && !LoginPanel->IsCoverShown() && !ExistsLock()) {
                 LoginPanel->OpenPanel(true);
                 LoginPanel->EventHandler(Panel::Get_Name); // quit event loop when enter is pressed
 				LoginPanel->ClosePanel();
