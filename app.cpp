@@ -391,11 +391,11 @@ void App::Run() {
 	    if (firstloop && showcover) {
             string preLoginCommand = cfg->getOption("prelogin_cmd");
             if (preLoginCommand != "") {
-                cout << "hide cursor " << endl;
+                //cout << "hide cursor " << endl;
                 HideCursor();
-                cout << "execute prelogin_cmd " << preLoginCommand.c_str() << endl;
+                //cout << "execute prelogin_cmd " << preLoginCommand.c_str() << endl;
                 int status=system(preLoginCommand.c_str());
-                cout << "executed " << status << endl;
+                //cout << "executed " << status << endl;
             }
 		}
             // Show panel
