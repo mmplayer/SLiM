@@ -23,6 +23,7 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
     Root = root;
     cfg = config;
 	Showcover = showcover;
+	CoverShown = false;
 
     session = "";
 
